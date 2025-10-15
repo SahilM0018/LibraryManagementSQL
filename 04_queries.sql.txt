@@ -1,0 +1,44 @@
+04_queries.sql
+-- 1. List all books
+SELECT * FROM books;
+
+-- 2. List all members
+SELECT * FROM members;
+
+-- 3. Check available copies of a book-- 
+SELECT title, available_copies FROM books WHERE book_id = 1;
+
+-- 4. Show currently borrowed books (not yet returned)
+SELECT bt.transaction_id, m.name AS member_name, b.title AS book_title, bt.borrow_date
+FROM borrow_transactions bt
+JOIN members m ON bt.member_id = m.member_id
+JOIN books b ON bt.book_id = b.book_id
+WHERE bt.returned = FALSE;
+
+-- 5. Show borrow history of a specific member
+SELECT b.title, bt.borrow_date, bt.return_date, bt.returned
+FROM borrow_transactions bt
+JOIN books b ON bt.book_id = b.book_id
+WHERE bt.member_id = 1;
+
+-- 6. Show fines pending payment
+SELECT f.fine_id, m.name AS member_name, b.title AS book_title, f.amount
+FROM fines f
+JOIN borrow_transactions bt ON f.transaction_id = bt.transaction_id
+JOIN members m ON bt.member_id = m.member_id
+JOIN books b ON bt.book_id = b.book_id
+WHERE f.paid = FALSE;
+
+-- 7. Count how many times each book has been borrowed
+SELECT m.name, COUNT(*) AS late_returns
+FROM borrow_transactions bt
+JOIN members m ON bt.member_id = m.member_id
+WHERE bt.returned = TRUE AND DATEDIFF(bt.return_date, bt.borrow_date) > 7
+GROUP BY bt.member_id
+ORDER BY late_returns DESC;
+
+-- 9. Find books currently available (copies > 0)
+SELECT title, available_copies FROM books WHERE available_copies > 0;
+
+-- 10. Show staff list
+SELECT * FROM staff;
