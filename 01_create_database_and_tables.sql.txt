@@ -1,0 +1,53 @@
+01_create_database_and_tables.sql
+
+CREATE DATABASE library_db;
+use library_db;
+
+CREATE TABLE books(
+    book_id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255),
+    genre VARCHAR(100),
+    published_year YEAR,
+    available_copies INT DEFAULT 0
+);
+
+-- Table: members-- 
+
+CREATE TABLE members (
+    member_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    phone VARCHAR(15),
+    join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: staff
+CREATE TABLE staff (
+    staff_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    role VARCHAR(50),
+    email VARCHAR(100)
+
+-- Table: borrow_transactions
+CREATE TABLE borrow_transactions (
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id INT,
+    member_id INT,
+    borrow_date DATE,
+    return_date DATE,
+    returned BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (book_id) REFERENCES books(book_id),
+    FOREIGN KEY (member_id) REFERENCES members(member_id)
+);
+
+-- Table: fines
+CREATE TABLE fines (
+    fine_id INT AUTO_INCREMENT PRIMARY KEY,
+    transaction_id INT,
+    amount DECIMAL(6,2),
+    paid BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (transaction_id) REFERENCES borrow_transactions(transaction_id)
+);
+
+
