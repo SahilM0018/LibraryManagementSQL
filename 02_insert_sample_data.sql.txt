@@ -1,0 +1,45 @@
+02_insert_sample_data.sql
+-- Insert Books
+INSERT INTO books (title, author, genre, published_year, available_copies)
+VALUES
+('The Great Gatsby', 'F. Scott Fitzgerald', 'Fiction', 1925, 5),
+('1984', 'George Orwell', 'Dystopian', 1949, 3),
+('Sapiens', 'Yuval Noah Harari', 'History', 2011, 2);
+
+INSERT INTO members (name, email, phone)
+VALUES
+('Alice Smith', 'alice@example.com', '1234567890'),
+('Bob Johnson', 'bob@example.com', '0987654321');
+
+INSERT INTO staff (name, role, email)
+VALUES
+('Jane Doe', 'Librarian', 'jane@library.com'),
+('Tom Ray', 'Assistant', 'tom@library.com');
+
+-- A. Borrow a Book
+-- Simulate borrow
+INSERT INTO borrow_transactions (book_id, member_id, borrow_date)
+VALUES (1, 1, CURDATE());
+
+-- Decrease available copies
+UPDATE books SET available_copies = available_copies - 1 WHERE book_id = 1;
+
+
+-- B. Return a Book
+-- Simulate return after 10 days
+UPDATE borrow_transactions
+SET return_date = CURDATE(), returned = TRUE
+WHERE transaction_id = 1;
+
+-- Increase available copies
+UPDATE books SET available_copies = available_copies + 1 WHERE book_id = 1;
+
+-- Assume 10 days passed, calculate fine for delay
+SET @days_allowed = 7;
+SET @fine_per_day = 10;
+
+INSERT INTO fines (transaction_id, amount)
+SELECT transaction_id,
+       (@fine_per_day * DATEDIFF(return_date, borrow_date) - (@fine_per_day * @days_allowed)) AS amount
+FROM borrow_transactions
+WHERE transaction_id = 1 AND DATEDIFF(return_date, borrow_date) > @days_allowed;
