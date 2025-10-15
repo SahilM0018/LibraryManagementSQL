@@ -1,0 +1,30 @@
+03_views_and_procedures.sql 
+-- A. View: Current Borrowed Books
+CREATE VIEW currently_borrowed AS
+SELECT m.name AS member_name, b.title AS book_title, bt.borrow_date
+FROM borrow_transactions bt
+JOIN books b ON bt.book_id = b.book_id
+JOIN members m ON bt.member_id = m.member_id
+WHERE bt.returned = FALSE;
+
+
+DELIMITER //
+
+CREATE PROCEDURE borrow_book(
+    IN p_book_id INT,
+    IN p_member_id INT
+)
+BEGIN
+    DECLARE copies INT;
+
+    SELECT available_copies INTO copies FROM books WHERE book_id = p_book_id;
+
+    IF copies > 0 THEN
+        INSERT INTO borrow_transactions (book_id, member_id, borrow_date)
+        VALUES (p_book_id, p_member_id, CURDATE());
+
+        UPDATE books SET available_copies = available_copies - 1 WHERE book_id = p_book_id;
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'No copies available';
+    END IF;
