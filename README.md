@@ -71,4 +71,15 @@ This file contains the SQL statements to create the database (`library_db`) and 
 Populates the database with example data for easy testing and exploration of the system.
 
 ### 3. `03_views_and_procedures.sql`
-This file includes SQL scripts to cre
+This file includes SQL scripts 
+
+## ⚙️ Tools & Technologies
+- **Database:** MySQL 
+- **Language:** SQL  
+- **Concepts Used:**  
+  - Database Normalization  
+  - Foreign Key Relationships  
+  - Subqueries & Joins  
+  - Triggers and Views  
+
+
